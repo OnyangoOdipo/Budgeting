@@ -49,7 +49,7 @@ The Budgeting System is a web application designed to manage the creation, appro
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/OnyangoOdipo/Budgeting.git
-   cd budgeting-system
+   cd Budgeting
    ```
 
 2. **Set Up the Database:**
