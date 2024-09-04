@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
-    
+
     if ($stmt->num_rows > 0) {
         $stmt->bind_result($id, $user_id, $username, $hashed_password, $role_id, $department_id);
         $stmt->fetch();
@@ -25,17 +25,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['department_id'] = $department_id;
 
             // Redirect based on role
-            if ($role_id == 1) { // Admin
-                header("Location: ../frontend/admin_dashboard.php");
-            } elseif ($role_id == 2) { // Viewer
-                header("Location: ../frontend/viewer_dashboard.php");
-            } elseif ($role_id == 3) { // Editor
-                header("Location: ../frontend/editor_dashboard.php");
-            } else {
-                header("Location: ../frontend/login.html?error=Invalid role");
+            switch ($role_id) {
+                case 1: // Admin
+                    header("Location: ../frontend/src/index.php");
+                    break;
+                case 2: // Viewer
+                    header("Location: ../frontend/src/indexv.php");
+                    break;
+                case 3: // Editor
+                    header("Location: ../frontend/src/indexe.php");
+                    break;
+                case 4: // Finance Manager
+                    header("Location: ../frontend/src/indexfm.php");
+                    break;
+                case 5: // Budget Controller
+                    header("Location: ../frontend/src/indexbc.php");
+                    break;
+                default:
+                    header("Location: ../frontend/login.php?error=Invalid role");
+                    break;
             }
         } else {
-            header("Location: ../frontend/login.html?error=Incorrect password");
+            header("Location: ../frontend/login.php?error=Incorrect password");
         }
     } else {
         header("Location: ../frontend/login.php?error=User not found");
