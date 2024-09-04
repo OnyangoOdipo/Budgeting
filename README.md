@@ -69,7 +69,7 @@ The Budgeting System is a web application designed to manage the creation, appro
 
 5. **Run the Application:**
    - Start your local server (Apache or Nginx).
-   - Access the application via `http://localhost/budgeting-system/frontend/src/index.php`.
+   - Access the application via `http://localhost/Budgeting/frontend/src/index.php`.
 
 ## Usage
 
