@@ -20,6 +20,25 @@
                 <h1>Register</h1>
                 <p>Create your account</p>
 
+                <?php
+                session_start();
+                if (isset($_SESSION['success']) && !empty($_SESSION['success'])): ?>
+                    <div class="success-message">
+                        <p style="color: green;"><?php echo $_SESSION['success']; ?></p>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+
+                <?php
+                if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
+                    <div class="error-messages">
+                        <?php foreach ($_SESSION['errors'] as $error): ?>
+                            <p style="color: red;"><?php echo $error; ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php unset($_SESSION['errors']); ?>
+                <?php endif; ?>
+
                 <form class="flex-c" action="../backend/register.php" method="POST" enctype="multipart/form-data">
                     <div class="input-box">
                         <span class="label">Username</span>
@@ -61,23 +80,9 @@
                         <div class="flex-r input">
                             <select id="role" name="role" required>
                                 <option value="admin">Admin</option>
-                                <option value="viewer">Viewer</option>
-                                <option value="editor">Editor</option>
+                                <option value="CEO">CEO</option>
                             </select>
                             <i class="fas fa-user-tag"></i>
-                        </div>
-                    </div>
-                    <div class="input-box">
-                        <span class="label">Department</span>
-                        <div class="flex-r input">
-                            <select id="department" name="department" required>
-                                <option value="Admin&Finance">Admin & Finance</option>
-                                <option value="Human Resource">Human Resource</option>
-                                <option value="Sales&Marketing">Sales & Marketing</option>
-                                <option value="Technical">Technical</option>
-                                <option value="Operation">Operation</option>
-                            </select>
-                            <i class="fas fa-building"></i>
                         </div>
                     </div>
                     <div class="input-box">

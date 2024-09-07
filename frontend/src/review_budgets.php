@@ -76,7 +76,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>ADMIN | Requests</title>
+    <title>CEO | Requests</title>
     <link rel="stylesheet" href="assets/vendors/feather/feather.css">
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css">
@@ -108,14 +108,14 @@ $result = $conn->query($sql);
     <div class="container-scroller">
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-                <a class="navbar-brand brand-logo" href="index.php"><img src="assets/images/logo.svg" alt="logo" /></a>
-                <a class="navbar-brand brand-logo-mini" href="index.php"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo" href="indexc.php"><img src="assets/images/logo.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="indexc.php"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-top">
                 <ul class="navbar-nav">
                     <li class="nav-item fw-semibold d-none d-lg-block ms-0">
                         <h1 class="welcome-text"><?php echo $greeting; ?>, <span class="text-black fw-bold"><?php echo $first_name . ' ' . $last_name; ?></span></h1>
-                        <h3 class="welcome-sub-text">Admin Dashboard</h3>
+                        <h3 class="welcome-sub-text">CEO Dashboard</h3>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -146,15 +146,7 @@ $result = $conn->query($sql);
         <div class="container-fluid page-body-wrapper">
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link" href="index.php"><i class="mdi mdi-grid-large menu-icon"></i><span class="menu-title">Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic"><i class="menu-icon mdi mdi-floor-plan"></i><span class="menu-title">Department</span><i class="menu-arrow"></i></a>
-                        <div class="collapse" id="ui-basic"><ul class="nav flex-column sub-menu"><li class="nav-item"> <a class="nav-link" href="viewmembers.php">View Members</a></li></ul></div>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements"><i class="menu-icon mdi mdi-card-text-outline"></i><span class="menu-title">Budgets</span><i class="menu-arrow"></i></a>
-                        <div class="collapse" id="form-elements"><ul class="nav flex-column sub-menu"><li class="nav-item"> <a class="nav-link" href="createbudget.php">Create Budget</a></li><li class="nav-item"> <a class="nav-link" href="reviewbudget.php">Review Budgets</a></li></ul></div>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="viewreports.php"><i class="menu-icon mdi mdi-file-document"></i><span class="menu-title">Reports</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="viewnotifications.php"><i class="menu-icon mdi mdi-bell"></i><span class="menu-title">Notifications</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="indexc.php"><i class="mdi mdi-grid-large menu-icon"></i><span class="menu-title">Dashboard</span></a></li>
                 </ul>
             </nav>
 
@@ -164,7 +156,7 @@ $result = $conn->query($sql);
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Admin Requests</h4>
+                                    <h4 class="card-title">Budget Requests</h4>
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>

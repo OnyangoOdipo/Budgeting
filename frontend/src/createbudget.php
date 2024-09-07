@@ -17,6 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Set date_created to the current timestamp
     $date_created = date("Y-m-d H:i:s");
 
+    $success = [];
+    $errors = [];
+
     // Loop through the items and insert each one
     foreach ($descriptions as $index => $description) {
         $quantity = $quantities[$index];
@@ -34,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute()) {
             $item_id = $stmt->insert_id;
         } else {
-            echo "Error creating item: " . $stmt->error;
-            exit;
+            $errors[] = "Error creating item: " . $stmt->error;
+            continue;
         }
 
         $stmt->close();
@@ -47,10 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             $budget_id = $stmt->insert_id;
-            echo "New budget created successfully with ID: " . $budget_id . "<br>";
+            $success[] = "New budget created successfully with ID: " . $budget_id;
         } else {
-            echo "Error creating budget: " . $stmt->error;
-            exit;
+            $errors[] = "Error creating budget: " . $stmt->error;
+            continue;
         }
 
         $stmt->close();
@@ -59,10 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare("INSERT INTO budget_items (budget_id, item_id) VALUES (?, ?)");
         $stmt->bind_param("ii", $budget_id, $item_id);
 
-        if ($stmt->execute()) {
-            echo "Budget linked to item successfully.<br>";
-        } else {
-            echo "Error linking budget to item: " . $stmt->error;
+        if (!$stmt->execute()) {
+            $errors[] = "Error linking budget to item: " . $stmt->error;
         }
 
         $stmt->close();
@@ -72,18 +73,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare("INSERT INTO messages (department_id, message, created_date) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $department_id, $message, $date_created);
 
-        if ($stmt->execute()) {
-            echo "Message inserted successfully.<br>";
-        } else {
-            echo "Error inserting message: " . $stmt->error;
+        if (!$stmt->execute()) {
+            $errors[] = "Error inserting message: " . $stmt->error;
         }
 
         $stmt->close();
     }
 
     $conn->close();
+
+    // Set success and error messages in session
+    $_SESSION['success'] = $success;
+    $_SESSION['errors'] = $errors;
+
+    // Redirect to avoid form resubmission on reload
+    header("Location: createbudget.php");
+    exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -177,6 +185,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <input type="hidden" name="department_id" value="<?php echo $department_id; ?>">
 
                                 <div id="item-container">
+                                <?php
+                                if (isset($_SESSION['success']) && !empty($_SESSION['success'])) {
+                                    echo '<div class="alert alert-success">';
+                                    foreach ($_SESSION['success'] as $message) {
+                                        echo '<p>' . htmlspecialchars($message) . '</p>';
+                                    }
+                                    echo '</div>';
+                                    unset($_SESSION['success']); // Clear success messages
+                                }
+
+                                if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])) {
+                                    echo '<div class="alert alert-danger">';
+                                    foreach ($_SESSION['errors'] as $error) {
+                                        echo '<p>' . htmlspecialchars($error) . '</p>';
+                                    }
+                                    echo '</div>';
+                                    unset($_SESSION['errors']); // Clear error messages
+                                }
+                                ?>
+
                                     <div class="budget-item">
                                         <div class="form-group">
                                             <label for="currency_id">Currency:</label>

@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <div class=" flex-r container">
+  <div class="flex-r container">
     <div class="flex-r login-wrapper">
       <div class="login-text">
         <div class="logo">
@@ -21,16 +21,20 @@
         <h1>Sign In</h1>
         <p>Login to get more of this app</p>
 
+        <!-- Display Error or Success Messages -->
         <?php
         if (isset($_GET['error'])) {
-            echo '<p class="error">' . htmlspecialchars($_GET['error']) . '</p>';
+            echo '<p class="message error">' . htmlspecialchars($_GET['error']) . '</p>';
+        }
+        if (isset($_GET['success'])) {
+            echo '<p class="message success">' . htmlspecialchars($_GET['success']) . '</p>';
         }
         ?>
 
         <form class="flex-c" action="../backend/login.php" method="POST">
           <div class="input-box">
             <span class="label">E-mail</span>
-            <div class=" flex-r input">
+            <div class="flex-r input">
               <input type="email" id="email" name="email" placeholder="name@abc.com">
               <i class="fas fa-at"></i>
             </div>
@@ -54,5 +58,5 @@
       </div>
     </div>
   </div>
-  </body>
+</body>
 </html>

@@ -27,19 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Redirect based on role
             switch ($role_id) {
                 case 1: // Admin
-                    header("Location: ../frontend/src/index.php");
+                    header("Location: ../frontend/src/index.php?success=Login successful");
                     break;
                 case 2: // Viewer
-                    header("Location: ../frontend/src/indexv.php");
+                    header("Location: ../frontend/src/indexv.php?success=Login successful");
                     break;
                 case 3: // Editor
-                    header("Location: ../frontend/src/indexe.php");
+                    header("Location: ../frontend/src/indexe.php?success=Login successful");
                     break;
                 case 4: // Finance Manager
-                    header("Location: ../frontend/src/indexfm.php");
+                    header("Location: ../frontend/src/indexfm.php?success=Login successful");
                     break;
                 case 5: // Budget Controller
-                    header("Location: ../frontend/src/indexbc.php");
+                    header("Location: ../frontend/src/indexbc.php?success=Login successful");
+                    break;
+                case 6: // CEO
+                    header("Location: ../frontend/src/indexc.php?success=Login successful");
                     break;
                 default:
                     header("Location: ../frontend/login.php?error=Invalid role");

@@ -3,7 +3,7 @@ session_start();
 include('../../backend/db.php');
 
 // Check if the user is logged in and has the role_id of 2 (Viewer)
-if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 1) {
+if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 6) {
   header("Location: pages/samples/unauthorized.html");
 }
 
@@ -44,7 +44,7 @@ if ($result1->num_rows > 0) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>ADMIN | BS </title>
+    <title>CEO | BS </title>
     <link rel="stylesheet" href="assets/vendors/feather/feather.css">
     <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css">
@@ -78,7 +78,7 @@ if ($result1->num_rows > 0) {
             </button>
           </div>
           <div>
-            <a class="navbar-brand brand-logo" href="index.php">
+            <a class="navbar-brand brand-logo" href="indexc.php">
               <img src="assets/images/logo.svg" alt="logo" />
             </a>
             <a class="navbar-brand brand-logo-mini" href="index.php">
@@ -90,7 +90,7 @@ if ($result1->num_rows > 0) {
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text"><?php echo $greeting; ?>, <span class="text-black fw-bold"><?php echo $first_name . ' ' . $last_name; ?></span></h1>
-            <h3 class="welcome-sub-text">This is your Admin Dashboard</h3>
+            <h3 class="welcome-sub-text">This is your CEO Dashboard</h3>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
@@ -218,15 +218,14 @@ if ($result1->num_rows > 0) {
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <i class="menu-icon mdi mdi-floor-plan"></i>
-                <span class="menu-title">Users</span>
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Budgets</span>
                 <i class="menu-arrow"></i>
               </a>
-              <div class="collapse" id="ui-basic">
+              <div class="collapse" id="form-elements">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Add Users</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="manage_users.php">Manage Users</a></li>
+                  <li class="nav-item"><a class="nav-link" href="review_budgets.php">Review Budgets</a></li>
                 </ul>
               </div>
             </li>
@@ -662,97 +661,6 @@ if ($result1->num_rows > 0) {
       <!-- page-body-wrapper ends -->
     </div>
 
-    <!-- Modal -->
-<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="registerModalLabel">Register New User</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        <?php
-                session_start();
-                if (isset($_SESSION['success']) && !empty($_SESSION['success'])): ?>
-                    <div class="success-message">
-                        <p style="color: green;"><?php echo $_SESSION['success']; ?></p>
-                    </div>
-                    <?php unset($_SESSION['success']); ?>
-                <?php endif; ?>
-
-                <!-- Display errors if there are any -->
-                <?php
-                if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
-                    <div class="error-messages">
-                        <?php foreach ($_SESSION['errors'] as $error): ?>
-                            <p style="color: red;"><?php echo $error; ?></p>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php unset($_SESSION['errors']); ?>
-                <?php endif; ?>
-      </div>
-      <div class="modal-body">
-        <form id="registerForm" action="../../backend/register.php" method="post" enctype="multipart/form-data">
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
-          </div>
-          <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" required>
-          </div>
-          <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" required>
-          </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-          </div>
-          <div class="mb-3">
-            <label for="phone_number" class="form-label">Phone Number</label>
-            <input type="text" class="form-control" id="phone_number" name="phone_number" required>
-          </div>
-          <div class="mb-3">
-            <label for="role" class="form-label">Role</label>
-            <select class="form-select" id="role" name="role" required onchange="toggleDepartmentField()">
-              <option value="admin">Admin</option>
-              <option value="viewer">Viewer</option>
-              <option value="editor">Editor</option>
-              <option value="finance_manager">Finance Manager</option>
-              <option value="budget_controller">Budget Controller</option>
-            </select>
-          </div>
-          <!-- HOD Checkbox -->
-          <div class="mb-3" id="hod-section" style="display: none;">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="is_hod" name="is_hod">
-              <label class="form-check-label" for="is_hod">Is Head of Department</label>
-            </div>
-          </div>
-          <div class="mb-3" id="department-section">
-            <label for="department" class="form-label">Department</label>
-            <select class="form-select" id="department" name="department">
-              <option value="Admin&Finance">Admin & Finance</option>
-              <option value="Human Resource">Human Resource</option>
-              <option value="Sales&Marketing">Sales & Marketing</option>
-              <option value="Technical">Technical</option>
-              <option value="Operation">Operation</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="image" class="form-label">Profile Image</label>
-            <input type="file" class="form-control" id="image" name="image">
-          </div>
-          <div class="mb-3" id="password-section">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password">
-          </div>
-          <button type="submit" name="register" class="btn btn-primary">Register</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
     <script src="assets/vendors/js/vendor.bundle.base.js"></script>
     <script src="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <script src="assets/vendors/chart.js/chart.umd.js"></script>
@@ -850,37 +758,6 @@ if ($result1->num_rows > 0) {
             }
         }
     });
-
-    document.getElementById('role').addEventListener('change', function() {
-      var passwordSection = document.getElementById('password-section');
-      if (this.value === 'admin') {
-        passwordSection.style.display = 'block';
-      } else {
-        passwordSection.style.display = 'none';
-      }
-    });
-
-    document.getElementById('role').addEventListener('change', function () {
-      const hodSection = document.getElementById('hod-section');
-      if (this.value === 'editor') {
-        hodSection.style.display = 'block';
-      } else {
-        hodSection.style.display = 'none';
-      }
-    });
-
-    function toggleDepartmentField() {
-        var role = document.getElementById('role').value;
-        var departmentSection = document.getElementById('department-section');
-
-        if (role === 'finance_manager' || role === 'budget_controller') {
-            departmentSection.style.display = 'none';
-            document.getElementById('department').removeAttribute('required');
-        } else {
-            departmentSection.style.display = 'block';
-            document.getElementById('department').setAttribute('required', 'required');
-        }
-    }
 </script>
   </body>
 </html>
