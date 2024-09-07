@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 04, 2024 at 09:06 AM
+-- Generation Time: Sep 07, 2024 at 08:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,7 +45,9 @@ CREATE TABLE `budgets` (
 INSERT INTO `budgets` (`id`, `approved_by`, `date_modified`, `date_created`, `department_id`, `currency_id`, `item_id`, `total_amount`) VALUES
 (6, NULL, '2024-08-30 19:29:31', '2024-08-30 19:29:31', 4, 1, 8, 449980.00),
 (7, NULL, '2024-08-30 19:33:38', '2024-08-30 19:33:38', 4, 1, 9, 625000.00),
-(9, NULL, '2024-09-04 05:27:18', '2024-09-04 05:27:18', 4, 1, 11, 1000.00);
+(9, NULL, '2024-09-04 05:27:18', '2024-09-04 05:27:18', 4, 1, 11, 1000.00),
+(10, NULL, '2024-09-06 05:55:24', '2024-09-06 05:55:24', 4, 1, 12, 20100.00),
+(11, NULL, '2024-09-06 05:55:24', '2024-09-06 05:55:24', 4, 1, 13, 256368.00);
 
 -- --------------------------------------------------------
 
@@ -65,7 +67,9 @@ CREATE TABLE `budget_items` (
 INSERT INTO `budget_items` (`budget_id`, `item_id`) VALUES
 (6, 8),
 (7, 9),
-(9, 11);
+(9, 11),
+(10, 12),
+(11, 13);
 
 -- --------------------------------------------------------
 
@@ -106,7 +110,7 @@ CREATE TABLE `departments` (
 INSERT INTO `departments` (`id`, `head_of_department`, `department`) VALUES
 (1, NULL, 'Admin&Finance'),
 (2, NULL, 'Human Resource'),
-(3, NULL, 'Sales&Marketing'),
+(3, 19, 'Sales&Marketing'),
 (4, 13, 'Technical'),
 (5, 15, 'Operation');
 
@@ -156,7 +160,9 @@ INSERT INTO `items` (`id`, `description`, `quantity`, `unit_price`, `brand`, `co
 (8, 'HP Laptops', 20, 45000.00, 'HP', 'Black'),
 (9, 'Phones', 25, 25000.00, 'Samsung', 'Gold'),
 (10, 'Tablets', 31, 27000.00, 'Samsung', 'Blue'),
-(11, 'Lanyards', 5, 200.00, 'New', 'White');
+(11, 'Lanyards', 5, 200.00, 'New', 'White'),
+(12, 'hh', 3, 6700.00, '', ''),
+(13, 'vv', 56, 4578.00, 'New', 'White');
 
 -- --------------------------------------------------------
 
@@ -184,7 +190,10 @@ INSERT INTO `messages` (`id`, `department_id`, `message`, `created_date`) VALUES
 (6, NULL, 'Budget ID Has been rejected please review it and submit again.', '2024-09-04 08:59:31'),
 (7, 4, 'Your budget request ID 6 has been rejected.', '2024-09-04 09:21:29'),
 (8, 4, 'Your budget request ID 2 has been approved.', '2024-09-04 09:21:36'),
-(9, 4, 'Your budget request ID 3 has been rejected.', '2024-09-04 09:21:39');
+(9, 4, 'Your budget request ID 3 has been rejected.', '2024-09-04 09:21:39'),
+(10, 4, 'A new budget has been created for your department.', '2024-09-06 05:55:24'),
+(11, 4, 'A new budget has been created for your department.', '2024-09-06 05:55:24'),
+(12, 4, 'Your budget request ID 4 has been approved.', '2024-09-07 08:52:47');
 
 -- --------------------------------------------------------
 
@@ -221,7 +230,7 @@ CREATE TABLE `requests` (
 INSERT INTO `requests` (`id`, `department_id`, `date_created`, `requested_by`, `review_status`, `item_id`) VALUES
 (2, 4, '2024-09-03 10:11:47', 'EDT1363', 'approved', 8),
 (3, 4, '2024-09-03 10:11:47', 'EDT1363', 'rejected', 8),
-(4, 4, '2024-09-03 10:19:24', 'EDT1363', 'processing', 8),
+(4, 4, '2024-09-03 10:19:24', 'EDT1363', 'approved', 8),
 (5, 4, '2024-09-03 10:19:24', 'EDT1363', 'processing', 8),
 (6, 4, '2024-09-03 10:23:45', 'EDT1363', 'rejected', 8),
 (7, 4, '2024-09-03 10:29:21', 'EDT1363', 'requested', 8),
@@ -238,7 +247,7 @@ INSERT INTO `requests` (`id`, `department_id`, `date_created`, `requested_by`, `
 
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
-  `types_of_role` enum('admin','viewer','finance_manager','editor','budget_controller') NOT NULL
+  `types_of_role` enum('admin','CEO','viewer','finance_manager','editor','budget_controller') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -250,7 +259,8 @@ INSERT INTO `roles` (`id`, `types_of_role`) VALUES
 (2, 'viewer'),
 (3, 'editor'),
 (4, 'finance_manager'),
-(5, 'budget_controller');
+(5, 'budget_controller'),
+(6, 'CEO');
 
 -- --------------------------------------------------------
 
@@ -277,11 +287,6 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `user_id`, `username`, `phone_number`, `role_id`, `image`, `email`, `password`, `first_name`, `last_name`, `department_id`) VALUES
-(1, 'ADM1502', 'shaddy12', '0757963318', NULL, 'uploads/While do Structure.png', 'odpsha@gmail.com', '', 'Shadrack', 'Odipo', NULL),
-(3, 'ADM3446', 'shaddy12', '0757963318', 1, 'uploads/While do Structure.png', 'odpsha@gmail.com', '', 'Shadrack', 'Odipo', 1),
-(4, 'ADM2578', 'shaddy12', '0757963318', 1, '../uploads/While do Structure.png', 'odpsha@gmail.com', '', 'Shadrack', 'Odipo', 1),
-(5, '2620', 'shaddy12', '0757963318', NULL, NULL, 'odpsha@gmail.com', '', 'Shadrack', 'Odipo', NULL),
-(6, 'ADM8796', '21Pilot', '567434567', 1, '../uploads/Figure_1.png', 'pontious@pilate.com', '$2y$10$rfJMnGMkoE4MddrEspQHtOmSiJSG3S.mXawxo2X.Ib.knXPtHNX6S', 'Pontious', 'Pilate', 1),
 (7, 'ADM6949', 'admin101', '346674467', 1, '../uploads/Figure_1.png', 'admin@admin.com', '$2y$10$cnfUJjE3/E.WuOo1LcBKr.n3T7BpCeI4oBHDZYdaYF2FO7tWX/6Q6', 'Admin', 'Admino', 1),
 (8, 'EDT9644', 'Editor101', '56784567568', 3, '../uploads/if the else structure.png', 'editor@editor.com', '$2y$10$k3/x/QxYbyJJ3Wc/q/1aI.UwOA9BGmcXlXozMVFnAnNJUmh3pOA8C', 'Editorial', 'Editor', 2),
 (9, 'VWR1084', 'Viewer101', '34567883', 2, '../uploads/if the else structure.png', 'viewer@gmail.com', '$2y$10$D7uPGK6LSAK7ZeskbMY1feHUG2uk144HrMt6z.c.6Tm15a/mwcWOi', 'View', 'Viewer', 2),
@@ -289,7 +294,13 @@ INSERT INTO `users` (`id`, `user_id`, `username`, `phone_number`, `role_id`, `im
 (14, 'VWR4753', 'ViewerT', '654446534', 2, '../uploads/Figure_1.png', 'viewert@gmail.com', '$2y$10$WrqGuXATdF.kD5CyDjFj4Om5OgIKIaMR5MddZ9ze5wKie24Quww3y', 'Veiwert', 'Tech', 4),
 (15, 'EDT3940', 'editor103', '456753456', 3, '../uploads/Gradient.png', 'editoro@gmail.com', '$2y$10$Q6.1rG0Eq6yBRiEmNfNCZ.cCxocpnwztkJ5PKWhD28dJefnWTpJfK', 'Edith', 'Mary', 5),
 (16, 'BGC1033', 'Budget101', '34567436', 5, '../uploads/Figure_1.png', 'bc@gmail.com', '$2y$10$KKVbjnIAdotm3vrthFsp7OJ.wG8OwY4XAzZ4ARCd.ouBMFwJYQWju', 'Bridgit', 'Bright', NULL),
-(17, 'FMG3647', 'Financem', '45674567', 4, '../uploads/if the else structure.png', 'finan@gmail.com', '$2y$10$8el7AfdVkvhR2aXD6i9Yq.l0bKziROexQMW5GCBeP1MPD/AZWUhoy', 'Manager', 'Finance', NULL);
+(17, 'FMG3647', 'Financem', '45674567', 4, '../uploads/if the else structure.png', 'finan@gmail.com', '$2y$10$8el7AfdVkvhR2aXD6i9Yq.l0bKziROexQMW5GCBeP1MPD/AZWUhoy', 'Manager', 'Finance', NULL),
+(18, 'ADM5665', 'Nyambura', '456572876', 1, '../uploads/Screenshot 2024-08-19 141832.png', 'fnyambura@gmail.com', '$2y$10$uc2U9WLTr6OE3w.zjjdFRurzwFjmuNbObegSwnZGkD01j7AY98fk6', 'Faith', 'Nyambura', 1),
+(19, 'EDT5041', 'Shadrack', '0757963318', 3, '../uploads/Screenshot 2024-08-06 164649.png', 'odpsha@gmail.com', '$2y$10$yMTjq0WwBb3nl5Hdlo8m3eaXjGaBTMdaGkt5izPH2wNX8gt84mVS2', 'Shadrack', 'Onyango', 3),
+(20, 'FMG7875', '4fdhga', '435654', 4, '../uploads/Screenshot 2024-08-19 141447.png', 'od@gmail.com', '$2y$10$V7Sb9yZEvYJgzW9DRlaSB.Oyug/EWA.S4hMDU927PBGpZYiCkV3ta', 'gvbcj', 'vcdsac', NULL),
+(21, 'VWR9582', 'fjgvvccz', '87645', 2, '../uploads/Screenshot 2024-08-19 141810.png', 'bfdh@gmail.com', '$2y$10$pW3wmPKYNkVFHwrnz8uohuPJ1d3QKLM8vSoaxd1XIkmJcui.XzNT.', ' ksvz', 'badcbjac', 2),
+(23, 'CEO6517', 'CEO', '3456647', 6, '../uploads/Screenshot 2024-08-19 141810.png', 'ceo@gmail.com', '$2y$10$4/UhvJk5Fir7VW.dz0OT2.TZV31C3y3whmATa55wdrb2akzvDRB7S', 'CEO', 'Budgeting', NULL),
+(24, 'ADM2463', 'pontiouspilate', '0718463039', 1, '../uploads/MT4 location.png', 'pontious@pilate.com', '$2y$10$0SdSW0znU50whgBDbp9t1OZSMhtb87L8vh1sVfYYhcXWLHUZ05ThO', 'Pontious', 'Pilate', NULL);
 
 --
 -- Indexes for dumped tables
@@ -385,7 +396,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `budgets`
 --
 ALTER TABLE `budgets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `currency`
@@ -409,13 +420,13 @@ ALTER TABLE `fund_allocations`
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `process_history`
@@ -433,13 +444,13 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Constraints for dumped tables
