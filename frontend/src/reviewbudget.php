@@ -59,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['request_review'])) {
     $check_user_stmt->close();
 }
 
-// Delete Budget Logic
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_budget'])) {
     $budget_id = $_POST['budget_id'];
 
@@ -77,10 +76,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_budget'])) {
             $delete_items_stmt->execute();
             $delete_items_stmt->close();
 
-            $delete_requests_stmt = $conn->prepare("DELETE FROM requests WHERE item_id IN (SELECT id FROM items WHERE budget_id = ?)");
-            $delete_requests_stmt->bind_param("i", $budget_id);
-            $delete_requests_stmt->execute();
-            $delete_requests_stmt->close();
+            $get_items_stmt = $conn->prepare("SELECT item_id FROM budget_items WHERE budget_id = ?");
+            $get_items_stmt->bind_param("i", $budget_id);
+            $get_items_stmt->execute();
+            $get_items_stmt->bind_result($item_id);
+
+            $item_ids = [];
+            while ($get_items_stmt->fetch()) {
+                $item_ids[] = $item_id;
+            }
+            $get_items_stmt->close();
+
+            if (!empty($item_ids)) {
+                $item_ids_list = implode(",", $item_ids);
+
+                $delete_requests_stmt = $conn->prepare("DELETE FROM requests WHERE item_id IN ($item_ids_list)");
+                if ($delete_requests_stmt !== false) {
+                    $delete_requests_stmt->execute();
+                    $delete_requests_stmt->close();
+                } else {
+                    $error_message = "Error preparing request deletion: " . htmlspecialchars($conn->error);
+                }
+            }
         } else {
             $error_message = "Error deleting budget: " . htmlspecialchars($stmt->error);
         }
@@ -88,6 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_budget'])) {
         $stmt->close();
     }
 }
+
 
 // Retrieve budgets for review
 $sql = "SELECT b.id, b.date_created, SUM(i.quantity * i.unit_price) as total_amount, i.id as item_id, i.description, r.review_status

@@ -670,7 +670,6 @@ if ($result1->num_rows > 0) {
         <h5 class="modal-title" id="registerModalLabel">Register New User</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <?php
-                session_start();
                 if (isset($_SESSION['success']) && !empty($_SESSION['success'])): ?>
                     <div class="success-message">
                         <p style="color: green;"><?php echo $_SESSION['success']; ?></p>
