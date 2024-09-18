@@ -2,6 +2,11 @@
 session_start();
 include('../../backend/db.php');
 
+$first_name = '';
+$last_name = '';
+$email = '';
+
+
 if (!isset($_SESSION['user_id'])) {
     die("User not logged in. Please log in again.");
 }
@@ -30,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Update the request status
         $stmt = $conn->prepare("UPDATE requests SET review_status = ? WHERE id = ?");
         $stmt->bind_param("si", $status, $request_id);
-        
+
         if ($stmt->execute()) {
             // Retrieve the department_id for the message
             $stmt = $conn->prepare("SELECT department_id FROM requests WHERE id = ?");
@@ -53,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $conn->rollback();
             echo "<p class='error-message'>Error updating request status: " . htmlspecialchars($stmt->error) . "</p>";
         }
-        
+
         $stmt->close();
     } catch (Exception $e) {
         // Rollback transaction if an error occurred
@@ -73,6 +78,7 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -95,15 +101,18 @@ $result = $conn->query($sql);
             color: green;
             font-weight: bold;
         }
+
         .error-message {
             color: red;
             font-weight: bold;
         }
+
         .btn-action {
             margin-right: 5px;
         }
     </style>
 </head>
+
 <body>
     <div class="container-scroller">
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -121,7 +130,7 @@ $result = $conn->query($sql);
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img class="img-xs rounded-circle" src="<?php echo $image_url; ?>" alt="Profile image"> 
+                            <img class="img-xs rounded-circle" src="<?php echo $image_url; ?>" alt="Profile image">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                             <div class="dropdown-header text-center">
@@ -133,7 +142,7 @@ $result = $conn->query($sql);
                             <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
                             <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
                             <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
-                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+                            <a href="../../backend/logout.php" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
                         </div>
                     </li>
                 </ul>
@@ -224,4 +233,5 @@ $result = $conn->query($sql);
     <script src="assets/js/settings.js"></script>
     <script src="assets/js/todolist.js"></script>
 </body>
+
 </html>

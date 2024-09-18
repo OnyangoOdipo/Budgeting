@@ -51,7 +51,7 @@
           <input class="btn" type="submit" value="Login">
           <span class="extra-line">
             <span>Don't have an account?</span>
-            <a href="register.html">Sign Up</a>
+            <a href="register.php">Sign Up</a>
           </span>
         </form>
 
