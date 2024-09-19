@@ -1,112 +1,85 @@
 <?php
-session_start();
-include('../../backend/db.php');
+// Database connection
+$host = 'localhost';
+$dbname = 'budgeting';
+$username = 'root'; // change to your database user
+$password = ''; // change to your database password
 
-// Check if the user is logged in and has the role_id of 2 (Viewer)
-if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 3) {
-    header("Location: pages/samples/unauthorized.html");
+// Create a connection
+$conn = mysqli_connect($host, $username, $password, $dbname);
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-$department_id = isset($_SESSION['department_id']) ? $_SESSION['department_id'] : null;
-$user_id = $_SESSION['user_id'];
-
-$query = $conn->prepare("SELECT first_name, last_name, email, image FROM users WHERE user_id = ?");
-$query->bind_param("s", $user_id);
-$query->execute();
-$query->bind_result($first_name, $last_name, $email, $image);
-$query->fetch();
-$query->close();
-
-if (!$department_id) {
-    die("Department ID is not set. Please log in again.");
+// Process budget request if "process" action is triggered
+if (isset($_GET['process_id'])) {
+    $processId = $_GET['process_id'];
+    
+    // Update the status to 'processing'
+    $updateQuery = "UPDATE requests SET review_status = 'processing' WHERE id = $processId";
+    
+    if (mysqli_query($conn, $updateQuery)) {
+        echo "<p style='color: green;'>Budget request with ID $processId has been set to processing.</p>";
+    } else {
+        echo "<p style='color: red;'>Error updating record: " . mysqli_error($conn) . "</p>";
+    }
 }
 
-date_default_timezone_set('Africa/Nairobi');
-$current_hour = date('H');
-
-if ($current_hour < 12) {
-    $greeting = "Good Morning";
-} elseif ($current_hour < 18) {
-    $greeting = "Good Afternoon";
-} else {
-    $greeting = "Good Evening";
-}
-
-// Fetch the department's budgets
-$sql = "SELECT b.id AS budget_id, b.date_created, b.date_modified, 
-        b.department_id, b.currency_id, i.description, i.quantity, i.unit_price
-        FROM budgets b
-        JOIN items i ON b.item_id = i.id
-        WHERE b.department_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $department_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
+// Fetch budgets with 'requested' status
+$query = "SELECT * FROM requests WHERE review_status = 'requested'";
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- (head content remains unchanged) -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Requests Review</title>
 </head>
-<body class="with-welcome-text">
-    <div class="container-scroller">
-        <!-- (navigation and sidebar code remain unchanged) -->
-        <div class="container-fluid page-body-wrapper">
-            <nav class="sidebar sidebar-offcanvas" id="sidebar">
-                <!-- (sidebar content remains unchanged) -->
-            </nav>
-            <div class="main-panel">
-                <div class="content-wrapper">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Your Department's Budgets</h4>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Budget ID</th>
-                                                    <th>Date Created</th>
-                                                    <th>Date Modified</th>
-                                                    <th>Description</th>
-                                                    <th>Quantity</th>
-                                                    <th>Unit Price</th>
-                                                    <th>Currency</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php
-                                                if ($result->num_rows > 0) {
-                                                    while ($row = $result->fetch_assoc()) {
-                                                        echo "<tr>";
-                                                        echo "<td>" . htmlspecialchars($row['budget_id']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['date_created']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['date_modified']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['quantity']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['unit_price']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['currency_id']) . "</td>";
-                                                        echo "</tr>";
-                                                    }
-                                                } else {
-                                                    echo "<tr><td colspan='7'>No budgets found for your department.</td></tr>";
-                                                }
-                                                ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- (footer remains unchanged) -->
-            </div>
-        </div>
-    </div>
-    <!-- (scripts remain unchanged) -->
+<body>
+
+<h2>Requested Budgets</h2>
+
+<?php
+// Check if any records were found
+if (mysqli_num_rows($result) > 0) {
+    echo "<table border='1' cellpadding='10'>
+            <tr>
+                <th>ID</th>
+                <th>Department ID</th>
+                <th>Date Created</th>
+                <th>Requested By</th>
+                <th>Status</th>
+                <th>Item ID</th>
+                <th>Action</th>
+            </tr>";
+    
+    // Loop through the result and display records
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>
+                <td>{$row['id']}</td>
+                <td>{$row['department_id']}</td>
+                <td>{$row['date_created']}</td>
+                <td>{$row['requested_by']}</td>
+                <td>{$row['review_status']}</td>
+                <td>{$row['item_id']}</td>
+                <td><a href='review.php?process_id={$row['id']}'>Process</a></td>
+              </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "<p>No requested budgets found.</p>";
+}
+?>
+
 </body>
 </html>
+
+<?php
+// Close the connection
+mysqli_close($conn);
+?>
