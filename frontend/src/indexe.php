@@ -23,6 +23,18 @@ if ($current_hour < 12) {
 // Get logged-in user's details
 $user_id = $_SESSION['user_id'];
 
+// Retrieve logged-in editor's details
+$editor_query = "SELECT first_name, last_name, email FROM users WHERE user_id = ?";
+$stmt = $conn->prepare($editor_query);
+$stmt->bind_param("s", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$editor = $result->fetch_assoc();
+
+$editor_first_name = $editor['first_name'] ?? 'N/A';
+$editor_last_name = $editor['last_name'] ?? 'N/A';
+$editor_email = $editor['email'] ?? 'N/A';
+
 // Retrieve department details
 $department_id = $_SESSION['department_id']; // Assuming department_id is stored in session
 $department_query = "SELECT d.department, u.first_name, u.last_name, u.email
@@ -162,7 +174,7 @@ $recent_activities = $result->fetch_all(MYSQLI_ASSOC);
         <div class="navbar-menu-wrapper d-flex align-items-top">
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
-            <h1 class="welcome-text"><?php echo $greeting; ?>, <span class="text-black fw-bold"><?php echo $first_name . ' ' . $last_name; ?></span></h1>
+            <h1 class="welcome-text"><?php echo $greeting; ?>, <span class="text-black fw-bold"><?php echo $editor_first_name . ' ' . $editor_last_name; ?></span></h1>
             <h3 class="welcome-sub-text">This is your Editor Dashboard</h3>
             </li>
           </ul>
@@ -190,8 +202,8 @@ $recent_activities = $result->fetch_all(MYSQLI_ASSOC);
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                 <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" src="<?php echo $image_url; ?>" alt="Profile image">
-                <p class="mb-1 mt-3 fw-semibold"><?php echo $first_name . ' ' . $last_name; ?></p>
-                <p class="fw-light text-muted mb-0"><?php echo $email; ?></p>
+                <p class="mb-1 mt-3 fw-semibold"><?php echo $editor_first_name . ' ' . $editor_last_name; ?></p>
+                <p class="fw-light text-muted mb-0"><?php echo $editor_email; ?></p>
                 </div>
                 <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
                 <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
