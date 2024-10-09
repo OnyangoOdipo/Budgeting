@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Retrieve all requests
-$sql = "SELECT r.id, r.date_created, r.requested_by, r.review_status, i.description
+$sql = "SELECT r.id, r.date_created, r.requested_by, r.review_status, r.recommendation, i.description
         FROM requests r
         JOIN items i ON r.item_id = i.id
         WHERE r.review_status IN ('processing')";
@@ -175,6 +175,7 @@ $result = $conn->query($sql);
                                                     <th>Date Created</th>
                                                     <th>Requested By</th>
                                                     <th>Current Status</th>
+                                                    <th>Recommendation</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -187,6 +188,7 @@ $result = $conn->query($sql);
                                                             <td><?php echo htmlspecialchars($row['date_created']); ?></td>
                                                             <td><?php echo htmlspecialchars($row['requested_by']); ?></td>
                                                             <td><?php echo htmlspecialchars($row['review_status']); ?></td>
+                                                            <td><?php echo htmlspecialchars($row['recommendation']); ?></td>
                                                             <td>
                                                                 <form method="POST" action="review_budgets.php" style="display:inline;">
                                                                     <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($row['id']); ?>">

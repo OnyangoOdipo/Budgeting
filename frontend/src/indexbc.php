@@ -2,6 +2,10 @@
 session_start();
 include('../../backend/db.php');
 
+$first_name = '';
+$last_name = '';
+$email = '';
+
 // Check if the user is logged in and has the role_id of 2 (Viewer)
 if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 5) {
   header("Location: pages/samples/unauthorized.html");
@@ -9,10 +13,13 @@ if (!isset($_SESSION['role_id']) || $_SESSION['role_id'] != 5) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['request_id'])) {
     $requestId = $_POST['request_id'];
+    $recommendation = $_POST['recommendation'];
 
-    $updateQuery = "UPDATE requests SET review_status = 'processing' WHERE id = $requestId";
+    $updateQuery = "UPDATE requests SET review_status = 'processing', recommendation = ? WHERE id = ?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param('si', $recommendation, $requestId);
     
-    if (mysqli_query($conn, $updateQuery)) {
+    if ($stmt->execute()) {
         echo "<p style='color: green;'>Budget request with ID $requestId has been processed successfully.</p>";
     } else {
         echo "<p style='color: red;'>Error processing request: " . mysqli_error($conn) . "</p>";
@@ -225,6 +232,7 @@ $result = mysqli_query($conn, $query);
                           <th>Description</th>
                           <th>Date Created</th>
                           <th>Requested By</th>
+                          <th>Recommendation</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -237,10 +245,15 @@ $result = mysqli_query($conn, $query);
                               <td><?php echo htmlspecialchars($row['date_created']); ?></td>
                               <td><?php echo htmlspecialchars($row['requested_by']); ?></td>
                               <td>
-                                <form method="post" action="">
+                                <form id="form-<?php echo htmlspecialchars($row['id']); ?>" method="post" action="">
                                   <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($row['id']); ?>">
-                                  <button type="submit" name="action" value="process" class="btn btn-success">Process</button>
+                                  <div class="w-100">
+                                    <textarea name="recommendation" rows="3" class="form-control" placeholder="Enter recommendation"></textarea>
+                                  </div>
                                 </form>
+                              </td>
+                              <td>
+                                <button type="submit" form="form-<?php echo htmlspecialchars($row['id']); ?>" name="action" value="process" class="btn btn-success btn-sm">Process</button>
                               </td>
                             </tr>
                           <?php } ?>
